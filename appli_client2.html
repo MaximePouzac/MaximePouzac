@@ -40,112 +40,14 @@
     var windowHalfX = window.innerWidth / 2;
     var windowHalfY = window.innerHeight / 2;
     var object;
-    var material;
 
 
     init();
-
-    // manager
-    function loadModel() {
-        /*object.traverse( function ( child ) {
-            if ( child.isMesh ) child.material.map = texture;
-        } );*/
-        object.position.y = 0;
-        object.position.x = 0;
-        object.position.z = 0;
-        object.material = material;
-        //scene.add( object );
-        // update object
-        //updateMesh(object);
-    }
-    var manager = new THREE.LoadingManager( loadModel );
-    manager.onProgress = function ( item, loaded, total ) {
-        console.log( item, loaded, total );
-    };
-
     animate();
-    var loader = new THREE.OBJLoader( manager );
-    //var nameObject = 'models//teddy_echelle_log/teddy';
-    //var nameObject = 'models//teddy_echelle_classique/teddy';
-    var nameObject = 'models/vache_paslog/vache';
-    //var nameObject = 'models/nefertiti/Nefertiti_';
-
-    var nbObjects = 10;
-
-    /*
-    for (var i=0; i<10; i++)
-    {
-        loader.load(nameObject +  '.obj', function (obj) {
-            //loader.load(nameObject + i.toString() + '.obj', function (obj) {
-            object = obj;
-            updateMesh(object);
-           // animate();
-        }, onProgress, onError);
-        render();
-        //animate();
-    }
-    */
-
-    animate();
-
-    function updateMesh(obj) {
-        console.log('updateMesh called');
-        scene.remove(object);
-        object = obj;
-        object.position.y = 0;
-        object.position.x = 0;
-        object.position.z = 0;
-        object.material = material;
-        object.material.color = '#ff5851';
-        scene.add(object);
-
-        render();
-        //animate();
-    }
-    function onProgress( xhr ) {
-        if ( xhr.lengthComputable ) {
-            var percentComplete = xhr.loaded / xhr.total * 100;
-            //console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
-        }
-    }
-
-    function onError() {}
-
-
-    var index = 0;
-
-
-    var objLoader = new THREE.OBJLoader();
-
-    function loadNextFile() {
-
-        if (index > nbObjects - 1) return;
-
-        objLoader.load(nameObject + index.toString() +  '.obj', function(object) {
-
-            //scene.add(object);
-            updateMesh(object);
-            index++;
-            //sleep(1);
-            loadNextFile();
-
-        }, onProgress, onError);
-
-    }
-    loadNextFile();
-
-
-    function sleep(seconds){
-        var waitUntil = new Date().getTime() + seconds*1000;
-        while(new Date().getTime() < waitUntil) true;
-    }
-
-
-
     function init() {
         container = document.createElement( 'div' );
         document.body.appendChild( container );
-        camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 1, 1000 );
+        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
         camera.position.z = 50;
         // scene
         scene = new THREE.Scene();
@@ -155,9 +57,9 @@
         camera.add( pointLight );
         scene.add( camera );
         // material
-        material = new THREE.MeshStandardMaterial( {
+        var material = new THREE.MeshStandardMaterial( {
 
-            color: '#e242f4',
+            color: '#e242f4'    ,
 
             roughness: 0.25,
             metalness: 1,
@@ -169,21 +71,55 @@
             envMapIntensity: 0.7
 
         } );
-        //material.needsUpdate = true;
+        material.needsUpdate = true;
 
-        var geometry2 = new THREE.SphereGeometry( 0.5, 32, 32 );
-        var material2 = new THREE.MeshBasicMaterial( { color: '#fff4f9' } );
-        object = new THREE.Mesh( geometry2, material2 );
-        scene.add(object);
+        var geometry2 = new THREE.BoxGeometry( 5, 5, 5 );
+        var material2 = new THREE.MeshBasicMaterial( { color: '#fffffc' } );
+        var object3D = new THREE.Mesh( geometry2, material2 );
+        scene.add(object3D);
+
+        function updateMesh(object) {
+            scene.remove(object3D);
+            object3D = object;
+            scene.add(object3D);
+
+        }
 
 
-
-
+        // manager
+        function loadModel() {
+            /*object.traverse( function ( child ) {
+                if ( child.isMesh ) child.material.map = texture;
+            } );*/
+            object.position.y = 0;
+            object.position.x = 0;
+            object.position.z = 0;
+            object.material = material;
+            //scene.add( object );
+            // update object
+            updateMesh(object);
+        }
+        var manager = new THREE.LoadingManager( loadModel );
+        manager.onProgress = function ( item, loaded, total ) {
+            console.log( item, loaded, total );
+        };
         // texture
         //var textureLoader = new THREE.TextureLoader( manager );
         //var texture = textureLoader.load( 'textures/UV_Grid_Sm.jpg' );
         // model
+        function onProgress( xhr ) {
+            if ( xhr.lengthComputable ) {
+                var percentComplete = xhr.loaded / xhr.total * 100;
+                console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
+            }
+        }
+        function onError() {}
 
+
+        var loader = new THREE.OBJLoader( manager );
+        loader.load( 'models/FinalBaseMesh.obj', function ( obj ) {
+            object = obj;
+        }, onProgress, onError );
 
 
 
